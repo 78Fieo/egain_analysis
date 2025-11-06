@@ -1,0 +1,13 @@
+{
+  "name": "kb-insights-dashboard",
+  "version": "1.0.0",
+  "description": "Knowledge Base Analytics Dashboard",
+  "scripts": {
+    "dev": "npx serve -s . -l 5173",
+    "build": "echo 'Static site - no build needed'",
+    "preview": "npx serve -s . -l 4173"
+  },
+  "keywords": ["dashboard", "analytics", "knowledge-base"],
+  "author": "",
+  "license": "MIT"
+}
