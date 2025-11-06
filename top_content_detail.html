@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Performing Content - KB Insights Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f6f7fb;
+            color: #0f172a;
+            padding: 24px;
+            line-height: 1.55;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .breadcrumb a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #0f172a;
+        }
+
+        .breadcrumb-separator {
+            color: #cbd5e1;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-circle {
+            width: 48px;
+            height: 48px;
+            background: #dcfce7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .export-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn:hover {
+            background: #2563eb;
+        }
+
+        /* Controls */
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 12px 10px 38px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f8fafc;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .filter-select {
+            padding: 10px 36px 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f8fafc;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 20px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: white;
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .article-id {
+            color: #64748b;
+            font-size: 12px;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .trend-indicator.up {
+            color: #059669;
+        }
+
+        .trend-indicator.down {
+            color: #dc2626;
+        }
+
+        .action-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Pagination */
+        .pagination-container {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .page-btn {
+            min-width: 36px;
+            height: 36px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn:hover {
+            background: #f8fafc;
+        }
+
+        .page-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 900px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="kb_dashboard.html">Dashboard</a>
+            <span class="breadcrumb-separator">/</span>
+            <span>Top Performing Content</span>
+        </div>
+
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <div class="icon-circle">✅</div>
+                <div>
+                    <h1>Top Performing Content</h1>
+                    <p class="subtitle">Articles with the highest view counts and engagement metrics.</p>
+                </div>
+            </div>
+            <button class="export-btn" onclick="exportToCSV()">
+                <span>⬇</span>
+                Export CSV
+            </button>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search articles..." id="searchInput">
+            </div>
+            <select class="filter-select" id="sortSelect">
+                <option value="views">Sort by Views</option>
+                <option value="trend">Sort by Trend</option>
+                <option value="alphabetical">Sort Alphabetically</option>
+            </select>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>RANK</th>
+                        <th>ARTICLE TITLE</th>
+                        <th>VIEWS</th>
+                        <th>TREND</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+            <div class="pagination-container">
+                <div class="pagination-info">Showing <span id="showingRange">1 to 20</span> of <span id="totalItems">100</span> results</div>
+                <div class="pagination" id="pagination">
+                    <!-- Pagination buttons will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data - in production, this would come from your KB insights
+        const contentData = [
+            { id: "323648", title: "Online account login assistance", views: 323648, trend: "up", trendPct: 5 },
+            { id: "117979", title: "Contact us", views: 117979, trend: "up", trendPct: 3 },
+            { id: "51969", title: "Getting started with the WEX benefits mobile app", views: 51969, trend: "up", trendPct: 12 },
+            { id: "42241", title: "How to reset your username", views: 42241, trend: "down", trendPct: 2 },
+            { id: "23287", title: "How to reset your password", views: 23287, trend: "up", trendPct: 8 },
+            { id: "21308", title: "Eligible expenses for Benefits plans", views: 21308, trend: "up", trendPct: 4 },
+            { id: "11915", title: "How to set up your online account", views: 11915, trend: "down", trendPct: 1 },
+            { id: "10348", title: "What documentation is needed for my claim?", views: 10348, trend: "up", trendPct: 6 },
+            // Add more sample data...
+        ];
+
+        let currentPage = 1;
+        const itemsPerPage = 20;
+        let filteredData = [...contentData];
+
+        function renderTable() {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredData.slice(start, end);
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = pageData.map((item, index) => `
+                <tr>
+                    <td><strong>${start + index + 1}</strong></td>
+                    <td>
+                        <strong>${item.title}</strong>
+                        <span class="article-id">ID: ${item.id}</span>
+                    </td>
+                    <td><strong>${item.views.toLocaleString()}</strong></td>
+                    <td>
+                        <span class="trend-indicator ${item.trend}">
+                            ${item.trend === 'up' ? '↑' : '↓'} ${item.trendPct}%
+                        </span>
+                    </td>
+                    <td><a href="#" class="action-link">View Article</a></td>
+                </tr>
+            `).join('');
+
+            // Update pagination info
+            document.getElementById('showingRange').textContent = `${start + 1} to ${Math.min(end, filteredData.length)}`;
+            document.getElementById('totalItems').textContent = filteredData.length;
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            let html = `<button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+            
+            for (let i = 1; i <= Math.min(5, totalPages); i++) {
+                html += `<button class="page-btn ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            if (totalPages > 5) {
+                html += `<span class="page-btn" style="border: none; cursor: default;">...</span>`;
+                html += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+            
+            html += `<button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
+            
+            pagination.innerHTML = html;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredData = contentData.filter(item => {
+                return item.title.toLowerCase().includes(searchTerm);
+            });
+            
+            currentPage = 1;
+            renderTable();
+        }
+
+        function sortData() {
+            const sortBy = document.getElementById('sortSelect').value;
+            
+            if (sortBy === 'views') {
+                filteredData.sort((a, b) => b.views - a.views);
+            } else if (sortBy === 'trend') {
+                filteredData.sort((a, b) => {
+                    const aVal = a.trend === 'up' ? a.trendPct : -a.trendPct;
+                    const bVal = b.trend === 'up' ? b.trendPct : -b.trendPct;
+                    return bVal - aVal;
+                });
+            } else if (sortBy === 'alphabetical') {
+                filteredData.sort((a, b) => a.title.localeCompare(b.title));
+            }
+            
+            renderTable();
+        }
+
+        function exportToCSV() {
+            const headers = ['Rank', 'Article ID', 'Title', 'Views', 'Trend'];
+            const rows = filteredData.map((item, index) => [
+                index + 1,
+                item.id,
+                item.title,
+                item.views,
+                `${item.trend === 'up' ? '+' : '-'}${item.trendPct}%`
+            ]);
+            
+            const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'top_performing_content.csv';
+            a.click();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterData);
+        document.getElementById('sortSelect').addEventListener('change', sortData);
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+</html>
+

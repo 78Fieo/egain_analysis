@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Pain Points - KB Insights Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f6f7fb;
+            color: #0f172a;
+            padding: 24px;
+            line-height: 1.55;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .breadcrumb a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #0f172a;
+        }
+
+        .breadcrumb-separator {
+            color: #cbd5e1;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-circle {
+            width: 48px;
+            height: 48px;
+            background: #fee2e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .export-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn:hover {
+            background: #2563eb;
+        }
+
+        /* Controls */
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 12px 10px 38px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f8fafc;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .filter-select {
+            padding: 10px 36px 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f8fafc;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 20px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: white;
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge.high {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge.medium {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge.low {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .category-benefits {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .category-forms {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .category-technical {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .category-payroll {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .category-timeoff {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .action-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Pagination */
+        .pagination-container {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .page-btn {
+            min-width: 36px;
+            height: 36px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn:hover {
+            background: #f8fafc;
+        }
+
+        .page-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="kb_dashboard.html">Dashboard</a>
+            <span class="breadcrumb-separator">/</span>
+            <span>Top Pain Points</span>
+        </div>
+
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <div class="icon-circle">🔴</div>
+                <div>
+                    <h1>Top Pain Points</h1>
+                    <p class="subtitle">A comprehensive list of real user searches that failed, excluding internal support team searches and article IDs.</p>
+                </div>
+            </div>
+            <button class="export-btn" onclick="exportToCSV()">
+                <span>⬇</span>
+                Export CSV
+            </button>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search pain points..." id="searchInput">
+            </div>
+            <select class="filter-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="Benefits">Benefits</option>
+                <option value="Forms">Forms</option>
+                <option value="Technical">Technical</option>
+                <option value="Payroll">Payroll</option>
+                <option value="Time Off">Time Off</option>
+            </select>
+            <select class="filter-select" id="sortSelect">
+                <option value="frequency">Sort by Frequency</option>
+                <option value="impact">Sort by Impact</option>
+                <option value="alphabetical">Sort Alphabetically</option>
+            </select>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>PAIN POINT</th>
+                        <th>FREQUENCY</th>
+                        <th>IMPACT</th>
+                        <th>CATEGORY</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+            <div class="pagination-container">
+                <div class="pagination-info">Showing <span id="showingRange">1 to 8</span> of <span id="totalItems">231</span> results</div>
+                <div class="pagination" id="pagination">
+                    <!-- Pagination buttons will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data - in production, this would come from your KB insights
+        const painPointsData = [
+            { term: "lifestyle", frequency: 301, impact: "High", category: "Benefits", action: "Create Article" },
+            { term: "fsa", frequency: 280, impact: "High", category: "Benefits", action: "Create Article" },
+            { term: "lsa", frequency: 261, impact: "High", category: "Benefits", action: "Create Article" },
+            { term: "hsa", frequency: 210, impact: "Medium", category: "Benefits", action: "Create Article" },
+            { term: "w9", frequency: 169, impact: "Medium", category: "Forms", action: "Create Article" },
+            { term: "password reset", frequency: 103, impact: "Medium", category: "Technical", action: "Link to Existing" },
+            { term: "direct deposit form", frequency: 98, impact: "Low", category: "Forms", action: "Create Article" },
+            { term: "pto request", frequency: 26, impact: "Low", category: "Time Off", action: "Create Article" },
+            // Add more sample data...
+        ];
+
+        let currentPage = 1;
+        const itemsPerPage = 8;
+        let filteredData = [...painPointsData];
+
+        function getCategoryClass(category) {
+            const map = {
+                "Benefits": "category-benefits",
+                "Forms": "category-forms",
+                "Technical": "category-technical",
+                "Payroll": "category-payroll",
+                "Time Off": "category-timeoff"
+            };
+            return map[category] || "category-benefits";
+        }
+
+        function renderTable() {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredData.slice(start, end);
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = pageData.map(item => `
+                <tr>
+                    <td><strong>${item.term}</strong></td>
+                    <td>${item.frequency}</td>
+                    <td><span class="badge ${item.impact.toLowerCase()}">${item.impact}</span></td>
+                    <td><span class="category-badge ${getCategoryClass(item.category)}">${item.category}</span></td>
+                    <td><a href="#" class="action-link">${item.action}</a></td>
+                </tr>
+            `).join('');
+
+            // Update pagination info
+            document.getElementById('showingRange').textContent = `${start + 1} to ${Math.min(end, filteredData.length)}`;
+            document.getElementById('totalItems').textContent = filteredData.length;
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            let html = `<button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+            
+            // Show first page
+            html += `<button class="page-btn ${currentPage === 1 ? 'active' : ''}" onclick="changePage(1)">1</button>`;
+            
+            if (totalPages > 1) {
+                // Show ellipsis if needed
+                if (currentPage > 3) {
+                    html += `<span class="page-btn" style="border: none; cursor: default;">...</span>`;
+                }
+                
+                // Show current page and neighbors
+                for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                    html += `<button class="page-btn ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+                }
+                
+                // Show ellipsis if needed
+                if (currentPage < totalPages - 2) {
+                    html += `<span class="page-btn" style="border: none; cursor: default;">...</span>`;
+                }
+                
+                // Show last page
+                html += `<button class="page-btn ${currentPage === totalPages ? 'active' : ''}" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+            
+            html += `<button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
+            
+            pagination.innerHTML = html;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            
+            filteredData = painPointsData.filter(item => {
+                const matchesSearch = item.term.toLowerCase().includes(searchTerm);
+                const matchesCategory = !category || item.category === category;
+                return matchesSearch && matchesCategory;
+            });
+            
+            currentPage = 1;
+            renderTable();
+        }
+
+        function sortData() {
+            const sortBy = document.getElementById('sortSelect').value;
+            
+            if (sortBy === 'frequency') {
+                filteredData.sort((a, b) => b.frequency - a.frequency);
+            } else if (sortBy === 'impact') {
+                const impactOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
+                filteredData.sort((a, b) => impactOrder[b.impact] - impactOrder[a.impact]);
+            } else if (sortBy === 'alphabetical') {
+                filteredData.sort((a, b) => a.term.localeCompare(b.term));
+            }
+            
+            renderTable();
+        }
+
+        function exportToCSV() {
+            const headers = ['Pain Point', 'Frequency', 'Impact', 'Category', 'Action'];
+            const rows = filteredData.map(item => [
+                item.term,
+                item.frequency,
+                item.impact,
+                item.category,
+                item.action
+            ]);
+            
+            const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pain_points.csv';
+            a.click();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterData);
+        document.getElementById('categoryFilter').addEventListener('change', filterData);
+        document.getElementById('sortSelect').addEventListener('change', sortData);
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+</html>
+

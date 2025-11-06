@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data files (optional - comment out if you want to include)
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+*.db
+
+# Sensitive data
+.env
+config.local.py
+secrets.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Zip files
+*.zip
+
