@@ -49,3 +49,4 @@ improvement_tracker.csv
 *.tmp
 *.temp
 ~$*
+.env
